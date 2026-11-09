@@ -263,7 +263,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         #region Instantiate control arrays
 
-        GameExeLabels = new[]
+        GameExeLabels = new DarkLabel[SupportedGameCount]
         {
             PathsPage.Thief1ExePathLabel,
             PathsPage.Thief2ExePathLabel,
@@ -271,7 +271,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             PathsPage.SS2ExePathLabel,
             PathsPage.TDMExePathLabel,
         };
-        GameExeTextBoxes = new[]
+        GameExeTextBoxes = new DarkTextBox[SupportedGameCount]
         {
             PathsPage.Thief1ExePathTextBox,
             PathsPage.Thief2ExePathTextBox,
@@ -279,7 +279,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             PathsPage.SS2ExePathTextBox,
             PathsPage.TDMExePathTextBox,
         };
-        GameExeBrowseButtons = new[]
+        GameExeBrowseButtons = new StandardButton[SupportedGameCount]
         {
             PathsPage.Thief1ExePathBrowseButton,
             PathsPage.Thief2ExePathBrowseButton,
@@ -287,7 +287,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             PathsPage.SS2ExePathBrowseButton,
             PathsPage.TDMExePathBrowseButton,
         };
-        GameUseSteamCheckBoxes = new[]
+        GameUseSteamCheckBoxes = new DarkCheckBox[SupportedGameCount]
         {
             PathsPage.Thief1UseSteamCheckBox,
             PathsPage.Thief2UseSteamCheckBox,
@@ -296,7 +296,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             GetDummy<DarkCheckBox>(),
         };
 
-        GameWebSearchUrlLabels = new[]
+        GameWebSearchUrlLabels = new DarkLabel[SupportedGameCount]
         {
             OtherPage.T1WebSearchUrlLabel,
             OtherPage.T2WebSearchUrlLabel,
@@ -304,7 +304,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             OtherPage.SS2WebSearchUrlLabel,
             OtherPage.TDMWebSearchUrlLabel,
         };
-        GameWebSearchUrlTextBoxes = new[]
+        GameWebSearchUrlTextBoxes = new DarkTextBox[SupportedGameCount]
         {
             OtherPage.T1WebSearchUrlTextBox,
             OtherPage.T2WebSearchUrlTextBox,
@@ -312,7 +312,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             OtherPage.SS2WebSearchUrlTextBox,
             OtherPage.TDMWebSearchUrlTextBox,
         };
-        GameWebSearchUrlResetButtons = new[]
+        GameWebSearchUrlResetButtons = new DarkButton[SupportedGameCount]
         {
             OtherPage.T1WebSearchUrlResetButton,
             OtherPage.T2WebSearchUrlResetButton,
