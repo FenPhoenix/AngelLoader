@@ -92,6 +92,8 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
 
     #endregion
 
+    internal Font GetDefaultCellStyleFontOrFallback => DefaultCellStyle.Font ?? Font;
+
     #region Get FM / FM data
 
     /// <summary>

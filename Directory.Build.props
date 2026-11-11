@@ -1,5 +1,5 @@
 <Project>
 	<PropertyGroup>
-		<SolutionTargetFramework>net9.0-windows</SolutionTargetFramework>
+		<SolutionTargetFramework>net11.0-windows</SolutionTargetFramework>
 	</PropertyGroup>
 </Project>

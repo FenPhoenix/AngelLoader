@@ -671,7 +671,7 @@ public sealed partial class MainForm : DarkFormBase,
 
         ChangeReadmeBoxFont(Config.ReadmeUseFixedWidthFont);
 
-        _fmsListDefaultFontSizeInPoints = FMsDGV.DefaultCellStyle.Font.SizeInPoints;
+        _fmsListDefaultFontSizeInPoints = FMsDGV.GetDefaultCellStyleFontOrFallback.SizeInPoints;
         _fmsListDefaultRowHeight = FMsDGV.RowTemplate.Height;
 
         // ReSharper disable once RedundantExplicitArraySize
@@ -1084,7 +1084,7 @@ public sealed partial class MainForm : DarkFormBase,
         // Set these here because they depend on the splitter positions
         Localize(startup: true);
 
-        if (Math.Abs(Config.FMsListFontSizeInPoints - FMsDGV.DefaultCellStyle.Font.SizeInPoints) >= 0.001)
+        if (Math.Abs(Config.FMsListFontSizeInPoints - FMsDGV.GetDefaultCellStyleFontOrFallback.SizeInPoints) >= 0.001)
         {
             ZoomFMsDGV(ZoomFMsDGVType.ZoomToHeightOnly, Config.FMsListFontSizeInPoints);
         }
@@ -3671,7 +3671,7 @@ public sealed partial class MainForm : DarkFormBase,
 
             SelectedFM? selFM = FMsDGV.RowSelected() ? FMsDGV.GetMainSelectedFMPosInfo() : null;
 
-            Font f = FMsDGV.DefaultCellStyle.Font;
+            Font f = FMsDGV.GetDefaultCellStyleFontOrFallback;
 
             float fontSize =
                 (type == ZoomFMsDGVType.ZoomIn ? f.SizeInPoints + 1.0f :
@@ -4330,7 +4330,7 @@ public sealed partial class MainForm : DarkFormBase,
                 // To set the ratio back to exact on zoom reset
                 : FMsDGV.RowTemplate.Height == _fmsListDefaultRowHeight
                     ? _ratingImageColumnWidth
-                    : (FMsDGV.DefaultCellStyle.Font.Height + 9) * (_ratingImageColumnWidth / _fmsListDefaultRowHeight);
+                    : (FMsDGV.GetDefaultCellStyleFontOrFallback.Height + 9) * (_ratingImageColumnWidth / _fmsListDefaultRowHeight);
             newRatingColumn.Visible = oldRatingColumn.Visible;
             newRatingColumn.DisplayIndex = oldRatingColumn.DisplayIndex;
         }
@@ -5422,7 +5422,7 @@ public sealed partial class MainForm : DarkFormBase,
             FMsDGV.GetColumnData(),
             FMsDGV.CurrentSortedColumn,
             FMsDGV.CurrentSortDirection,
-            FMsDGV.DefaultCellStyle.Font.SizeInPoints,
+            FMsDGV.GetDefaultCellStyleFontOrFallback.SizeInPoints,
             FMsDGV.Filter,
             Lazy_GameFilterControlsMenu.GetCheckedStates(),
             Lazy_FilterControlsMenu.GetCheckedStates(),
