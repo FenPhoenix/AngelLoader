@@ -54,8 +54,6 @@ Simply download the [latest release](https://github.com/FenPhoenix/AngelLoader/r
 
 *Note: Some folders are considered "protected" (`Program Files` / `Program Files (x86)` are examples) and AngelLoader should not be placed anywhere in these folders or it may not (probably won't) work.*
 
-.NET Framework 4.7.2 or above is required. All modern versions of Windows should come with this already.
-
 ### Running on Linux:
 I haven't tried or tested running this modern .NET version on Linux yet, sorry.
 
