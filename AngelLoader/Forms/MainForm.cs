@@ -4640,14 +4640,14 @@ public sealed partial class MainForm : DarkFormBase,
         ControlUtils.ShowMenu(Lazy_PlayOriginalGameMenu.Menu, Lazy_PlayOriginalControls.ButtonSingle, MenuPos.TopRight);
     }
 
-    internal void PlayOriginalGameMenuItems_Click(object? sender, EventArgs e)
+    internal async void PlayOriginalGameMenuItems_Click(object? sender, EventArgs e)
     {
         if (sender is not ToolStripMenuItemCustom s) return;
         GameIndex gameIndex = s.GameIndex;
 
         bool playMP = sender == Lazy_PlayOriginalGameMenu.Thief2MPMenuItem;
 
-        FMInstallAndPlay.PlayOriginalGame(gameIndex, playMP);
+        await FMInstallAndPlay.PlayOriginalGame(gameIndex, playMP);
     }
 
     internal void PlayOriginalGameModMenuItems_Click(object? sender, EventArgs e)
@@ -4660,10 +4660,10 @@ public sealed partial class MainForm : DarkFormBase,
 
     #region Multiple buttons
 
-    internal void PlayOriginalGameButtons_Click(object? sender, EventArgs e)
+    internal async void PlayOriginalGameButtons_Click(object? sender, EventArgs e)
     {
         if (sender is not DarkButton button) return;
-        FMInstallAndPlay.PlayOriginalGame(button.GameIndex);
+        await FMInstallAndPlay.PlayOriginalGame(button.GameIndex);
     }
 
     internal void PlayOriginalGameButtons_MouseUp(object? sender, MouseEventArgs e)
@@ -4681,9 +4681,9 @@ public sealed partial class MainForm : DarkFormBase,
             Lazy_PlayOriginalControls.T2MPMenuButton, MenuPos.TopRight);
     }
 
-    internal void PlayT2MPMenuItem_Click(object? sender, EventArgs e)
+    internal async void PlayT2MPMenuItem_Click(object? sender, EventArgs e)
     {
-        FMInstallAndPlay.PlayOriginalGame(GameIndex.Thief2, playMP: true);
+        await FMInstallAndPlay.PlayOriginalGame(GameIndex.Thief2, playMP: true);
     }
 
     #endregion
