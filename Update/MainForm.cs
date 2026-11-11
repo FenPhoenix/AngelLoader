@@ -85,7 +85,7 @@ public sealed partial class MainForm : DarkFormBase
 #endif
     }
 
-    protected override void OnClosing(CancelEventArgs e)
+    protected override void OnFormClosing(FormClosingEventArgs e)
     {
         if (_updateInProgress)
         {
@@ -93,7 +93,7 @@ public sealed partial class MainForm : DarkFormBase
             Program.CancelCopy();
         }
 
-        base.OnClosing(e);
+        base.OnFormClosing(e);
     }
 
     public void SetMessage1(string message) => Invoke(() =>
