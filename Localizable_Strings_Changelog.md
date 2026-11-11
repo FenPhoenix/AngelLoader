@@ -6,6 +6,18 @@ If you want to update a translation from several versions back and don't want to
 
 ## List of localization-related changes by version
 
+### v1.12.2:
+
+No localizable text changes.
+
+### v1.12.1:
+
+No localizable text changes.
+
+### v1.12.0:
+
+No localizable text changes.
+
 ### v1.11.0:
 
 #### [English.ini changes](https://fenphoenix.github.io/AngelLoader/english_1.10.1_1.11.0.html)
