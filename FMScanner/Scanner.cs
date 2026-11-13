@@ -785,6 +785,10 @@ public sealed class Scanner : IDisposable
         {
             returnListFinal.AddRange(list);
         }
+
+        // PERF: This takes ~3ms on the 25,000 set. Possibly because we're only comparing by a single int32 and
+        // its containing class is much smaller than the FanMission class that we compare in the main list sort.
+        // I dunno. But anyway, no need to use the multithreaded version here.
         returnListFinal.Sort(new FMScanOriginalIndexComparer());
 
         return returnListFinal;
