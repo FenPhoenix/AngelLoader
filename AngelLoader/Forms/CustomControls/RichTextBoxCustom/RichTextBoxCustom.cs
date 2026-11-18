@@ -166,12 +166,14 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkC
         Native.SCROLLINFO si = ControlUtils.GetCurrentScrollInfo(Handle, Native.SB_VERT);
         try
         {
+            this.SuspendDrawing();
             base.SelectAll();
-            Focus();
         }
         finally
         {
             ControlUtils.RepositionScroll(Handle, si, Native.SB_VERT);
+            this.ResumeDrawing();
+            Focus();
         }
     }
 
