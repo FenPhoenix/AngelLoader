@@ -19,6 +19,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using CoreHook;
@@ -257,7 +258,7 @@ internal static class Win32ThemeHooks
     really want to remove it if we can help it. We could make some disgusting hack to make it not run if our type
     is MainForm or something.
     */
-    private static readonly object _preloadHooksLock = new();
+    private static readonly Lock _preloadHooksLock = new();
     public static void PreloadHooks()
     {
         lock (_preloadHooksLock)
@@ -669,7 +670,10 @@ internal static class Win32ThemeHooks
         public OverrideSysColorScope(Override @override) => SysColorOverride = @override;
 
         // ReSharper disable once MemberCanBeMadeStatic.Global
+        // Stupid analyzer doesn't know that a disposable ref struct's Dispose() method CAN'T be static, sheesh...
+#pragma warning disable CA1822 // Mark members as static
         public void Dispose() => SysColorOverride = Override.None;
+#pragma warning restore CA1822 // Mark members as static
     }
 
     #endregion
@@ -1122,7 +1126,7 @@ internal static class Win32ThemeHooks
 
     private static bool PointIsOnScrollBarTrackArea(ScrollBar scrollBar, int x, int y)
     {
-        Native.SCROLLBARINFO sbi = new() { cbSize = Marshal.SizeOf(typeof(Native.SCROLLBARINFO)) };
+        Native.SCROLLBARINFO sbi = new() { cbSize = Marshal.SizeOf<Native.SCROLLBARINFO>() };
         Native.GetScrollBarInfo(scrollBar.Handle, Native.OBJID_CLIENT, ref sbi);
 
         Rectangle thumbRect;

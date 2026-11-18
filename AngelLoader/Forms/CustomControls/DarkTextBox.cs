@@ -48,7 +48,7 @@ public class DarkTextBox : TextBox, IDarkable
             if (_darkModeEnabled == value) return;
             _darkModeEnabled = value;
 
-            Native.SCROLLBARINFO sbi_v = new() { cbSize = Marshal.SizeOf(typeof(Native.SCROLLBARINFO)) };
+            Native.SCROLLBARINFO sbi_v = new() { cbSize = Marshal.SizeOf<Native.SCROLLBARINFO>() };
             int result_v = Native.GetScrollBarInfo(Handle, Native.OBJID_VSCROLL, ref sbi_v);
 
             bool vertScrollBarNeedsRepositioning =
@@ -56,7 +56,7 @@ public class DarkTextBox : TextBox, IDarkable
                 (sbi_v.rgstate[0] & Native.STATE_SYSTEM_INVISIBLE) == 0 &&
                 (sbi_v.rgstate[0] & Native.STATE_SYSTEM_UNAVAILABLE) == 0;
 
-            Native.SCROLLBARINFO sbi_h = new() { cbSize = Marshal.SizeOf(typeof(Native.SCROLLBARINFO)) };
+            Native.SCROLLBARINFO sbi_h = new() { cbSize = Marshal.SizeOf<Native.SCROLLBARINFO>() };
             int result_h = Native.GetScrollBarInfo(Handle, Native.OBJID_HSCROLL, ref sbi_h);
 
             bool horzScrollBarNeedsRepositioning =

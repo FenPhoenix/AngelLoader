@@ -52,7 +52,7 @@ internal static partial class FMInstallAndPlay
         postprocess,
         enable_subtitles,
     }
-    private static readonly int _newDarkArgumentCount = Enum.GetValues(typeof(NewDarkArgument)).Length;
+    private static readonly int _newDarkArgumentCount = Enum.GetValues<NewDarkArgument>().Length;
 
     private static readonly string[] _newDarkArguments = RunFunc(static () =>
     {

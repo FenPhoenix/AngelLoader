@@ -1742,7 +1742,7 @@ internal static class Core
         {
             string finalUrl = index == -1
                 ? url
-                : url.Substring(0, index) + Uri.EscapeDataString(fm.Title) + url.Substring(index + "$TITLE$".Length);
+                : string.Concat(url.AsSpan(0, index), Uri.EscapeDataString(fm.Title), url.AsSpan(index + "$TITLE$".Length));
             ProcessStart_UseShellExecute(finalUrl);
         }
         catch (Exception ex)

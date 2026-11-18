@@ -258,7 +258,7 @@ internal static class ControlUtils
                     => throw new ArgumentOutOfRangeException(),
             };
 
-            sii.cbSize = (uint)Marshal.SizeOf(typeof(Native.SHSTOCKICONINFO));
+            sii.cbSize = (uint)Marshal.SizeOf<Native.SHSTOCKICONINFO>();
 
             int result = Native.SHGetStockIconInfo(sysIcon, Native.SHGSI_ICON, ref sii);
             Marshal.ThrowExceptionForHR(result, -1);
@@ -1102,7 +1102,7 @@ internal static class ControlUtils
 
         nint controlHandle = control.Handle;
 
-        Native.SCROLLBARINFO sbi_v = new() { cbSize = Marshal.SizeOf(typeof(Native.SCROLLBARINFO)) };
+        Native.SCROLLBARINFO sbi_v = new() { cbSize = Marshal.SizeOf<Native.SCROLLBARINFO>() };
         Native.GetScrollBarInfo(controlHandle, Native.OBJID_VSCROLL, ref sbi_v);
 
         Rectangle sbr = sbi_v.rcScrollBar.ToRectangle();

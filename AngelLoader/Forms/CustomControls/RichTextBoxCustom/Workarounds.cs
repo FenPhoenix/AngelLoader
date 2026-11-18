@@ -312,7 +312,7 @@ internal sealed partial class RichTextBoxCustom
     private void SetRichTextBoxCursor(Cursor cursor)
     {
         // Have to set parent cursor, otherwise the cursor doesn't change until the mouse moves
-        if (Parent != null) Parent.Cursor = cursor;
+        Parent?.Cursor = cursor;
     }
 
     private bool LinkCursor;

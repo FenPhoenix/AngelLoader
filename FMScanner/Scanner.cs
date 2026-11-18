@@ -1017,7 +1017,7 @@ public sealed class Scanner : IDisposable
         ref int fmNumber,
         int fmsCount)
     {
-        if (fms == null) throw new ArgumentNullException(nameof(fms));
+        ArgumentNullException.ThrowIfNull(fms);
 
         (List<ScannedFMDataAndError> scannedFMDataList, ProgressReport progressReport) =
             GetInitialScanData(tempPath, scanOptions, fmsCount, fmsCount);
@@ -1048,7 +1048,7 @@ public sealed class Scanner : IDisposable
         int fmsCount,
         int listCapacity)
     {
-        if (fms == null) throw new ArgumentNullException(nameof(fms));
+        ArgumentNullException.ThrowIfNull(fms);
 
         (List<ScannedFMDataAndError> scannedFMDataList, ProgressReport progressReport) =
             GetInitialScanData(tempPath, scanOptions, fmsCount, listCapacity);
@@ -4212,7 +4212,7 @@ public sealed class Scanner : IDisposable
     In contrast, we get the latest release date if we can, so switching would be a big ("breaking", if you will)
     change. So let's avoid doing it for now.
     */
-    private string GetTitleFromThiefGuildFormatArchiveName(FMToScan fm)
+    private static string GetTitleFromThiefGuildFormatArchiveName(FMToScan fm)
     {
         Match match = TitleFromThiefGuildArchiveNameFormatRegex().Match(fm.DisplayName);
         return match.Success ? match.Groups["Title"].Value : "";
@@ -4640,9 +4640,7 @@ public sealed class Scanner : IDisposable
     {
         string author = "";
 
-        bool foundAuthor = false;
-
-        for (int readmeIndex = 0; readmeIndex < _readmeFiles.Count; readmeIndex++)
+        loop_readmes: for (int readmeIndex = 0; readmeIndex < _readmeFiles.Count; readmeIndex++)
         {
             ReadmeInternal readme = _readmeFiles[readmeIndex];
             if (!readme.Scan) continue;
@@ -4666,8 +4664,7 @@ public sealed class Scanner : IDisposable
                     if (m.Success)
                     {
                         author = m.Groups["Author"].Value;
-                        foundAuthor = true;
-                        break;
+                        break loop_readmes;
                     }
 
                     pastFirstLineOfCopyrightSection = true;
@@ -4676,8 +4673,7 @@ public sealed class Scanner : IDisposable
                 author = AuthorCopyrightRegexesMatch(line, _ctx.AuthorMissionCopyrightRegexes);
                 if (!author.IsEmpty())
                 {
-                    foundAuthor = true;
-                    break;
+                    break loop_readmes;
                 }
 
                 string lineT = line.Trim(_ctx.CA_AsteriskHyphen).Trim();
@@ -4686,8 +4682,6 @@ public sealed class Scanner : IDisposable
                     inCopyrightSection = true;
                 }
             }
-
-            if (foundAuthor) break;
         }
 
         return author.IsWhiteSpace() ? "" : CleanupCopyrightAuthor(author);

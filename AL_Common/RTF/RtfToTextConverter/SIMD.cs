@@ -60,7 +60,7 @@ public sealed partial class RtfToTextConverter
             ref byte oneVectorAwayFromEnd = ref Unsafe.AddByteOffset(ref searchSpace, (uint)(spanLength - Vector512<byte>.Count));
 
             // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
-            do
+            loop_outer: do
             {
                 Vector512<byte> current = Vector512.LoadUnsafe(ref currentSearchSpace);
 
@@ -129,7 +129,7 @@ public sealed partial class RtfToTextConverter
                                         {
                                             PlainText_Add('\t');
                                         }
-                                        goto outerLoop;
+                                        continue loop_outer;
                                     }
                                 }
 
@@ -181,7 +181,6 @@ public sealed partial class RtfToTextConverter
                 }
 
                 currentSearchSpace = ref Unsafe.AddByteOffset(ref currentSearchSpace, Vector512<byte>.Count);
-                outerLoop:;
             } while (!Unsafe.IsAddressGreaterThan(ref currentSearchSpace, ref oneVectorAwayFromEnd));
         }
         else if (Vector256.IsHardwareAccelerated && spanLength >= Vector256<byte>.Count)
@@ -191,7 +190,7 @@ public sealed partial class RtfToTextConverter
             ref byte oneVectorAwayFromEnd = ref Unsafe.AddByteOffset(ref searchSpace, (uint)(spanLength - Vector256<byte>.Count));
 
             // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
-            do
+            loop_outer: do
             {
                 Vector256<byte> current = Vector256.LoadUnsafe(ref currentSearchSpace);
 
@@ -260,7 +259,7 @@ public sealed partial class RtfToTextConverter
                                         {
                                             PlainText_Add('\t');
                                         }
-                                        goto outerLoop;
+                                        continue loop_outer;
                                     }
                                 }
 
@@ -312,7 +311,6 @@ public sealed partial class RtfToTextConverter
                 }
 
                 currentSearchSpace = ref Unsafe.AddByteOffset(ref currentSearchSpace, Vector256<byte>.Count);
-                outerLoop:;
             } while (!Unsafe.IsAddressGreaterThan(ref currentSearchSpace, ref oneVectorAwayFromEnd));
         }
         else if (Vector128.IsHardwareAccelerated && spanLength >= Vector128<byte>.Count)
@@ -322,7 +320,7 @@ public sealed partial class RtfToTextConverter
             ref byte oneVectorAwayFromEnd = ref Unsafe.AddByteOffset(ref searchSpace, (uint)(spanLength - Vector128<byte>.Count));
 
             // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
-            do
+            loop_outer: do
             {
                 Vector128<byte> current = Vector128.LoadUnsafe(ref currentSearchSpace);
 
@@ -391,7 +389,7 @@ public sealed partial class RtfToTextConverter
                                         {
                                             PlainText_Add('\t');
                                         }
-                                        goto outerLoop;
+                                        continue loop_outer;
                                     }
                                 }
 
@@ -443,7 +441,6 @@ public sealed partial class RtfToTextConverter
                 }
 
                 currentSearchSpace = ref Unsafe.AddByteOffset(ref currentSearchSpace, Vector128<byte>.Count);
-                outerLoop:;
             } while (!Unsafe.IsAddressGreaterThan(ref currentSearchSpace, ref oneVectorAwayFromEnd));
         }
 

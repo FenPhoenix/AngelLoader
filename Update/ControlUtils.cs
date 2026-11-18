@@ -123,7 +123,7 @@ internal static class ControlUtils
                     => throw new ArgumentOutOfRangeException(),
             };
 
-            sii.cbSize = (uint)Marshal.SizeOf(typeof(Native.SHSTOCKICONINFO));
+            sii.cbSize = (uint)Marshal.SizeOf<Native.SHSTOCKICONINFO>();
 
             int result = Native.SHGetStockIconInfo(sysIcon, Native.SHGSI_ICON, ref sii);
             Marshal.ThrowExceptionForHR(result, -1);

@@ -986,7 +986,7 @@ internal static partial class Native
 
     public static NONCLIENTMETRICSW GetNonClientMetrics()
     {
-        NONCLIENTMETRICSW metrics = new() { cbSize = Marshal.SizeOf(typeof(NONCLIENTMETRICSW)) };
+        NONCLIENTMETRICSW metrics = new() { cbSize = Marshal.SizeOf<NONCLIENTMETRICSW>() };
         SystemParametersInfoW(SPI_GETNONCLIENTMETRICS, 0, ref metrics, 0);
         return metrics;
     }

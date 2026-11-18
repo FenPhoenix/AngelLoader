@@ -42,7 +42,7 @@ public sealed class DarkDateTimePicker : DateTimePicker, IDarkable
     private (Native.DATETIMEPICKERINFO DateTimePickerInfo, Rectangle ButtonRectangle)
     GetDTPInfoAndButtonRect()
     {
-        Native.DATETIMEPICKERINFO dtpInfo = new() { cbSize = Marshal.SizeOf(typeof(Native.DATETIMEPICKERINFO)) };
+        Native.DATETIMEPICKERINFO dtpInfo = new() { cbSize = Marshal.SizeOf<Native.DATETIMEPICKERINFO>() };
         Native.SendMessageW(Handle, Native.DTM_GETDATETIMEPICKERINFO, 0, ref dtpInfo);
 
         return (dtpInfo, dtpInfo.rcButton.ToRectangle());
