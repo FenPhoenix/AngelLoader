@@ -383,7 +383,7 @@ internal static class Import
                         if (!nonFMHeaders.Contains(lineT) &&
                             lineT.IsIniHeader() &&
                             lineT.Contains('.') &&
-                            darkLoaderFMRegex.Match(lineT).Success)
+                            darkLoaderFMRegex.IsMatch(lineT))
                         {
                             int lastIndexDot = lineT.LastIndexOf('.');
                             string dlArchive = lineT.Substring(1, lastIndexDot - 1);
@@ -523,7 +523,7 @@ internal static class Import
         bool t2DirRead = false;
         bool ss2DirRead = false;
 
-        for (int i = 0; i < lines.Count; i++)
+        loop_outer: for (int i = 0; i < lines.Count; i++)
         {
             string line = lines[i];
             string lineTS = line.TrimStart();
@@ -553,13 +553,11 @@ internal static class Import
                     {
                         break;
                     }
-                    if (t1DirRead && t2DirRead && ss2DirRead) goto breakout;
+                    if (t1DirRead && t2DirRead && ss2DirRead) break loop_outer;
                     i++;
                 }
             }
         }
-
-        breakout:
 
         if (t1Dir.IsWhiteSpace() && t2Dir.IsWhiteSpace() && ss2Dir.IsWhiteSpace()) return true;
 

@@ -692,8 +692,10 @@ internal static class Win32ThemeHooks
     {
         public OverrideSysColorScope(Override @override) => SysColorOverride = @override;
 
-        // ReSharper disable once MemberCanBeMadeStatic.Global
+        // Stupid analyzer doesn't know that a disposable ref struct's Dispose() method CAN'T be static, sheesh...
+#pragma warning disable CA1822 // Mark members as static
         public void Dispose() => SysColorOverride = Override.None;
+#pragma warning restore CA1822 // Mark members as static
     }
 
     #endregion

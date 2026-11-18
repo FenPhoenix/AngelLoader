@@ -4683,9 +4683,7 @@ public sealed class Scanner : IDisposable
     {
         string author = "";
 
-        bool foundAuthor = false;
-
-        for (int readmeIndex = 0; readmeIndex < _readmeFiles.Count; readmeIndex++)
+        loop_outer: for (int readmeIndex = 0; readmeIndex < _readmeFiles.Count; readmeIndex++)
         {
             ReadmeInternal readme = _readmeFiles[readmeIndex];
             if (!readme.Scan) continue;
@@ -4709,8 +4707,7 @@ public sealed class Scanner : IDisposable
                     if (m.Success)
                     {
                         author = m.Groups["Author"].Value;
-                        foundAuthor = true;
-                        break;
+                        break loop_outer;
                     }
 
                     pastFirstLineOfCopyrightSection = true;
@@ -4719,8 +4716,7 @@ public sealed class Scanner : IDisposable
                 author = AuthorCopyrightRegexesMatch(line, _ctx.AuthorMissionCopyrightRegexes);
                 if (!author.IsEmpty())
                 {
-                    foundAuthor = true;
-                    break;
+                    break loop_outer;
                 }
 
                 string lineT = line.Trim(_ctx.CA_AsteriskHyphen).Trim();
@@ -4729,8 +4725,6 @@ public sealed class Scanner : IDisposable
                     inCopyrightSection = true;
                 }
             }
-
-            if (foundAuthor) break;
         }
 
         return author.IsWhiteSpace() ? "" : CleanupCopyrightAuthor(author);

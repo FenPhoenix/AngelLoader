@@ -6,6 +6,13 @@ namespace AL_Common;
 
 public static partial class Common
 {
+    extension(Array)
+    {
+        // The Max Length of an Array
+        // Copy of https://github.com/dotnet/runtime/blob/main/src/libraries/System.Private.CoreLib/src/System/Array.cs
+        public static int MaxLength => 0X7FFFFFC7;
+    }
+
     // Meziantou.Polyfill's versions are less efficient (ie. > '0' && < '9' etc.) at the time of writing.
     extension(char)
     {

@@ -25,6 +25,7 @@ public enum STORAGE_BUS_TYPE
     BusTypeNvme = 0x11,
     BusTypeSCM = 0x12,
     BusTypeUfs = 0x13,
-    BusTypeMax = 0x11,
+    BusTypeNvmeof = 0x14,
+    BusTypeMax = 0x15,
     BusTypeMaxReserved = 0x7F,
 }

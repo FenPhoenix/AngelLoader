@@ -310,6 +310,5 @@ internal static class GLMLConversion
         sb.Append('}');
 
         return sb.ToString();
-
     }
 }

@@ -73,7 +73,7 @@ internal static partial class Ini
             for (int i = 0; i < fileInfos.Count; i++)
             {
                 string fileName = fileInfos[i].Name;
-                if (!Regex.Match(fileName, Paths.FMDataBakNumberedRegexString).Success)
+                if (!Regex.IsMatch(fileName, Paths.FMDataBakNumberedRegexString))
                 {
                     fileInfos.RemoveAt(i);
                     i--;
