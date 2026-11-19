@@ -24,10 +24,4 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<PlatformTarget>AnyCPU</PlatformTarget>
 	</PropertyGroup>
-
-	<ItemGroup>
-		<PackageReference Include="System.Numerics.Vectors" Version="4.6.1" />
-		<PackageReference Include="System.Runtime.Numerics" Version="4.3.0" />
-	</ItemGroup>
-
 </Project>
