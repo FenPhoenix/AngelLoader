@@ -387,7 +387,7 @@ public sealed partial class RtfDisplayedReadmeParser
     {
         uint value = Unsafe.ReadUnaligned<uint>(ref Unsafe.AddByteOffset(ref currentSearchSpace, index));
         if ((value == _parUInt || value == _tabUInt) &&
-            (parLength = _isParEndingChar[GetByteAtPos(ref currentSearchSpace, index + 4)]) > 0)
+            (parLength = IsParEndingChar[GetByteAtPos(ref currentSearchSpace, index + 4)]) > 0)
         {
             interTextKeyword = value == _parUInt ? InterTextKeyword.Par : InterTextKeyword.Tab;
             return true;
