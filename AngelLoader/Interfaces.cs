@@ -288,7 +288,7 @@ public interface IView : ISettingsChangeableView
     /// <param name="keepSelection"></param>
     /// <param name="gameTabSwitch"></param>
     /// <param name="landImmediate"></param>
-    /// <param name="keepMultiSelection"></param>
+    /// <param name="multiSelectedFMs"></param>
     /// <returns></returns>
     Task SortAndSetFilter(
         SelectedFM? selectedFM = null,
