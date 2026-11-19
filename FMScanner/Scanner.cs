@@ -1434,7 +1434,7 @@ public sealed class Scanner : IDisposable
                         of the same "mission" if they're used like this. So we're going to consider one "Mission"
                         line to be one mission, and if it has multiple maps then it's one mission with loading zones.
                         */
-                        else if (_ctx.DarkMod_TDM_MapSequence_MissionLine_Regex.Match(lineT).Success)
+                        else if (_ctx.DarkMod_TDM_MapSequence_MissionLine_Regex.IsMatch(lineT))
                         {
                             misCount++;
                         }
@@ -4083,10 +4083,10 @@ public sealed class Scanner : IDisposable
                     (lineT.StartsWithI_Local("By ") || lineT.StartsWithI_Local("By: ") ||
                      lineT.StartsWithI_Local("Original concept by ") ||
                      lineT.StartsWithI_Local("Created by ") ||
-                     _ctx.AThiefMissionRegex.Match(lineT).Success ||
+                     _ctx.AThiefMissionRegex.IsMatch(lineT) ||
                      lineT.StartsWithI_Local("A fan mission") ||
                      lineT.StartsWithI_Local("A Thief 3") ||
-                     _ctx.AThief3MissionRegex.Match(lineT).Success ||
+                     _ctx.AThief3MissionRegex.IsMatch(lineT) ||
                      lineT.StartsWithI_Local("A System Shock") ||
                      lineT.StartsWithI_Local("An SS2")))
                 {
@@ -4398,7 +4398,7 @@ public sealed class Scanner : IDisposable
 
         if (mainTitle.Value.IsEmpty()) return;
 
-        bool mainTitleContainsAcronym = _ctx.AcronymRegex.Match(mainTitle.Value).Success;
+        bool mainTitleContainsAcronym = _ctx.AcronymRegex.IsMatch(mainTitle.Value);
 
         bool swapDone = false;
 
@@ -4456,7 +4456,7 @@ public sealed class Scanner : IDisposable
 
         if (!swapDone &&
             !serverTitle.IsEmpty() &&
-            !_ctx.AcronymRegex.Match(serverTitle).Success &&
+            !_ctx.AcronymRegex.IsMatch(serverTitle) &&
             (mainTitleContainsAcronym || serverTitle.Length > titles[0].Value.Length))
         {
             DoServerTitleSwap(titles, serverTitle);
@@ -5600,7 +5600,7 @@ public sealed class Scanner : IDisposable
 
         // If a date has dot separators, it's probably European format, so we can up our accuracy with regard
         // to guessing about day/month order.
-        if (_ctx.EuropeanDateRegex.Match(dateString).Success)
+        if (_ctx.EuropeanDateRegex.IsMatch(dateString))
         {
             string dateStringTemp = _ctx.PeriodWithOptionalSurroundingSpacesRegex.Replace(dateString, ".").Trim(_ctx.CA_Period);
             if (DateTime.TryParseExact(
@@ -5785,8 +5785,10 @@ public sealed class Scanner : IDisposable
             }
 
             // PERF: 5ms over the whole 1098 set, whatever
-            Match match = Regex.Match(fmData.TagsString, @"language:\s*" + lang, Regex_IgnoreCaseInvariant);
-            if (match.Success) continue;
+            if (Regex.IsMatch(fmData.TagsString, @"language:\s*" + lang, Regex_IgnoreCaseInvariant))
+            {
+                continue;
+            }
 
             if (fmData.TagsString != "") fmData.TagsString += ", ";
             fmData.TagsString += "language:" + _ctx.LanguagesC[i];
