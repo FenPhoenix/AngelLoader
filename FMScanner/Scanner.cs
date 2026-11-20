@@ -4876,9 +4876,10 @@ public sealed class Scanner : IDisposable
         System Shock 2 .mis files all have the MAPPARAM string. It will be at either 696 or 916.
         696 = NewDark, 916 = OldDark.
 
-        *We skip this check because only a handful of OldDark Thief 2 missions have SKYOBJVAR in a wacky location,
-         and it's faster and more reliable to simply carry on with the secondary check than to try to guess where
-         SKYOBJVAR is in this case.
+        *"Any other location" really means "only in the table of contents". SKYOBJVAR is a chunk name and so is
+        always going to at least be in the TOC, and _should_ exist as an actual chunk too, but a handful of
+        OldDark Thief 2 missions have it in the TOC only. In these cases, we just fail SKYOBJVAR and continue on
+        to the next checks.
 
         For folder scans, we can seek to these positions directly, but for zip scans, we have to read through the
         stream sequentially until we hit each one.

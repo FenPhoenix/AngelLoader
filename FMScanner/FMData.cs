@@ -86,6 +86,7 @@ public sealed class ScanOptions
     public bool ScanAuthor = true;
     /// <summary>
     /// <see langword="true"/> to detect which game the mission is for (Thief 1, Thief 2, Thief 3, or System Shock 2).
+    /// Dark Mod FMs must have their game types known before being passed to the scanner, and thus are not detected there.
     /// </summary>
     public bool ScanGameType = true;
     /// <summary>
